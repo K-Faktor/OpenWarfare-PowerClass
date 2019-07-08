@@ -1,0 +1,225 @@
+/**/
+//******************************************************************************
+//  _____                  _    _             __
+// |  _  |                | |  | |           / _|
+// | | | |_ __   ___ _ __ | |  | | __ _ _ __| |_ __ _ _ __ ___
+// | | | | '_ \ / _ \ '_ \| |/\| |/ _` | '__|  _/ _` | '__/ _ \
+// \ \_/ / |_) |  __/ | | \  /\  / (_| | |  | || (_| | | |  __/
+//  \___/| .__/ \___|_| |_|\/  \/ \__,_|_|  |_| \__,_|_|  \___|
+//       | |               We don't make the game you play.
+//       |_|                 We make the game you play BETTER.
+//
+//            Website: http://openwarfaremod.com/
+//******************************************************************************
+
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_X			150
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			175
+
+#define CHOICE_GROUP			"class"
+#define CHOICE_SEP_1			2
+#define CHOICE_SEP_2			6
+#define CHOICE_SEP_3			8
+
+#include "ui_mp/menustyle.inc"
+#include "ui_mp/choices_setup_teams.menu"
+
+#define ORIGIN_DESCRIPTION		(CHOICE_X_START + 15) 190
+
+{
+
+
+	menuDef
+	{
+		name			"class"
+		rect			0 0 640 480
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		7.0
+		onOpen
+		{
+			focusFirst;
+		}
+		onEsc
+		{
+			scriptMenuResponse "back";
+		}
+
+		#ifndef PC
+		execkeyint BUTTON_START
+		{
+			scriptMenuResponse "back";
+		}
+		#endif
+
+		// background overlay
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			FULLSCREEN_WIDE
+			background		"animbg_blur_back"
+			forecolor		0.724 0.724 0.724 1
+			visible			1
+			decoration
+		}
+
+		// gradient_top
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_top"
+			visible			1
+			decoration
+		}
+
+		// gradient_bottom
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			0 405 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_bottom"
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			rect			255 180 128 128
+			forecolor		1 1 1 1
+			style			WINDOW_STYLE_SHADER
+			background		"new_logo_ow"
+			visible 		1
+			decoration
+		}
+
+		// map display ================================================
+		#include "ui_mp/tactical_map.inc";
+		#define ORIGIN_BANNER		108 48
+
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			ORIGIN_BANNER 400 0.5
+			background		"line_horizontal"
+			forecolor		1 1 1 0.85
+			visible			1	decoration	}
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			ORIGIN_BANNER 340 10
+			origin			30 1
+			background		"line_horizontal"
+			forecolor		OBJECTIVE_COLOR_MARINES
+			visible			1
+			decoration	}
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			ORIGIN_BANNER 400 0.5
+			origin			0 12
+			background		"line_horizontal"
+			forecolor		1 1 1 0.85
+			visible			1	decoration	}
+
+		itemDef	{
+			rect			-400 64 800 0 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_TITLE
+			textalign		ITEM_ALIGN_CENTER
+			forecolor		1 1 1 0.85
+			exp text ( gametypename() );
+			visible			1	decoration	}
+		itemDef	{
+			rect			-250 84 500 60 HORIZONTAL_ALIGN_CENTER VERTICAL_ALIGN_TOP
+			textstyle		ITEM_TEXTSTYLE_SHADOWED
+			textscale		TEXTSIZE_SMALL
+			textalign		ITEM_ALIGN_CENTER
+			forecolor		1 1 1 0.75
+			exp text( gametypedescription() );
+			autowrapped
+			visible			1	decoration	}
+
+		// ------------------ TREE TITLE ------------------
+
+		CHOICE_MENU_TITLE( "@MENU_OPTIONS_UPPER_CASE" )
+
+		// ------------------ buttons ---------------------
+		#define BACK_OPEN	;
+		#include "ui_mp/navcontrols.inc"
+
+		//=========================================================
+		//===================== MENU SELECTION ====================
+		//=========================================================
+		#include "ui_mp/teamicon.inc"
+		
+		#define SETUP_ACTION_CREATEACLASS \
+		play "mouse_click"; \
+		scriptMenuResponse "edit_class" \
+		open pc_cac1_popup;
+
+		// PC widescreen fix
+		#undef  CHOICE_X_START
+		#define CHOICE_X_START	-320
+
+		#undef	CHOICE_HORIZONTAL_ALIGN
+		#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER	
+
+		// Adding the current server to the favorites is now working as of version 0.0.2.
+		CHOICE_BUTTON_VIS( 1, "@OW_FAVORITE_ADD",  uiScript CreateFavorite; open popup_addfavorite;, when( dvarstring( ui_favoriteAddress ) != "" ) )
+		CHOICE_DBUTTON_VIS( 1, "@OW_FAVORITE_ADD", when( dvarstring( ui_favoriteAddress ) == "" ) )
+
+		CHOICE_BUTTON_VIS( 2, "@OW_SERVER_INFORMATION",  close self; open serverinfo;, when( dvarbool( ui_server_info ) ) )
+		CHOICE_DBUTTON_VIS( 2, "@OW_SERVER_INFORMATION", when( !dvarbool( ui_server_info ) ) )
+		
+		CHOICE_SEPARATOR( CHOICE_SEP_1 )
+
+		CHOICE_BUTTON_BG( 3, when( (TEAM_IS_MARINES || TEAM_IS_OPFOR) && MAY_CHOOSE_CLASS ) )
+		CHOICE_HIGHLIGHT( 3, (TEAM_IS_MARINES || TEAM_IS_OPFOR) && MAY_CHOOSE_CLASS )
+		CHOICE_BUTTON_VIS_NOHI( 3, "@MPUI_CHOOSE_CLASS", scriptMenuResponse "changeclass_marines", when( TEAM_IS_MARINES && MAY_CHOOSE_CLASS && !dvarbool( ui_close_class ) ) )
+		CHOICE_BUTTON_VIS_NOHI( 3, "@MPUI_CHOOSE_CLASS", scriptMenuResponse "changeclass_opfor", when( TEAM_IS_OPFOR && MAY_CHOOSE_CLASS && !dvarbool( ui_close_class ) ) )
+		CHOICE_DBUTTON_VIS( 3, "@MPUI_CHOOSE_CLASS", when( dvarbool( ui_close_class ) ); )
+		
+		CHOICE_BUTTON_FOCUS_VIS_ADV( 4, "@OW_CAC_TITLE", SETUP_ACTION_CREATEACLASS; ;, exec "set ui_hint_text @MPUI_DESC_CREATE_A_CLASS", CLEARUIHINT, when( !dvarbool( ui_close_class ) && !localvarBool( ui_hideBack ) ), !localvarBool( ui_hideBack ) )
+		CHOICE_DBUTTON_VIS( 4, "@OW_CAC_TITLE", when( dvarbool( ui_close_class ) ); )
+
+		CHOICE_BUTTON( 5, "@MPUI_CHANGE_TEAM", scriptMenuResponse "changeteam"; )
+
+		//CHOICE_BUTTON_VIS( 6, "@MPUI_CALL_VOTE", open callvote; close self;, when( dvarbool( ui_allowvote ) ); )
+		//CHOICE_DBUTTON_VIS( 6, "@MPUI_CALL_VOTE", when( !dvarbool( ui_allowvote ) ); )
+
+		CHOICE_SEPARATOR( CHOICE_SEP_2 )
+
+		CHOICE_BUTTON( 6, "@MENU_CONTROLS", close self; open main_controls )
+
+		CHOICE_BUTTON( 7, "@MENU_OPTIONS", close self; open main_options; execnow "set ui_allow_graphic_change 0"; )
+
+		CHOICE_BUTTON( 8, "@MPUI_MUTE_PLAYERS", open muteplayer; close self; )
+
+		CHOICE_SEPARATOR( CHOICE_SEP_3 )
+
+		CHOICE_BUTTON_BG( 9, 1 )
+		CHOICE_HIGHLIGHT( 9, 1 )
+		CHOICE_BUTTON_VIS_NOHI( 9, "@MENU_LEAVE_GAME", open popup_endgame, when( dvarbool( sv_running ) ) )
+		CHOICE_BUTTON_VIS_NOHI( 9, "@MENU_LEAVE_GAME", open popup_leavegame, when( !dvarbool( sv_running ) ) )
+
+		#include "ui/safearea.menu"
+	}
+
+	#include "ui_mp/popupstyle.inc"	
+	#include "ui/choices_setup_popmenu.menu"
+	
+	// ====================== create a class (custom class selection) =========================
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X		212
+
+	#define CAC_POPUP_X		(-320)
+	#define CAC_POPUP_Y		(238)
+	
+	#include "ui_mp/popup_cac_edit.inc"
+	CAC_POPUP( "pc_cac1_popup", CAC_POPUP_X, CAC_POPUP_Y )
+}
+
+

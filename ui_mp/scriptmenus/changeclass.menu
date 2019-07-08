@@ -1,0 +1,162 @@
+/**/
+//******************************************************************************
+//  _____                  _    _             __
+// |  _  |                | |  | |           / _|
+// | | | |_ __   ___ _ __ | |  | | __ _ _ __| |_ __ _ _ __ ___
+// | | | | '_ \ / _ \ '_ \| |/\| |/ _` | '__|  _/ _` | '__/ _ \
+// \ \_/ / |_) |  __/ | | \  /\  / (_| | |  | || (_| | | |  __/
+//  \___/| .__/ \___|_| |_|\/  \/ \__,_|_|  |_| \__,_|_|  \___|
+//       | |               We don't make the game you play.
+//       |_|                 We make the game you play BETTER.
+//
+//            Website: http://openwarfaremod.com/
+//******************************************************************************
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_X			//150
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			34
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#include "ui_mp/menustyle.inc"
+#include "ui/choices_setup_common.menu"
+
+#define ORIGIN_BUTTON_BACK			52 438
+#define ORIGIN_MENU_TREE			54 64
+#define ORIGIN_MENU_TITLE_MARINES	178 64
+#define ORIGIN_MENU_TITLE_OPFOR		170 64
+#define TREE_COLOR					1 1 1 0.5
+#define LABEL_TEXT_COLOR		0.7 0.75 0.75 1
+
+// ------
+
+{
+	menuDef
+	{
+		name			"changeclass"
+		rect			0 0 640 480
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		7.0
+		onOpen
+		{
+			// pc's initial selection loadout display workaround
+			#ifdef PC
+				setfocus "choice_one"; execnow "set ui_custom_class_highlighted 0; exec set ui_multi_s 0"; 
+			#endif
+		}
+		onEsc 
+		{
+			scriptMenuResponse "back";
+		}
+		
+		#ifndef PC
+		execkeyint BUTTON_START
+		{
+			close self;
+		}
+		#endif
+		
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			FULLSCREEN_WIDE
+			background		"animbg_blur_back"
+			forecolor		0.724 0.724 0.724 1
+			visible			1
+			decoration
+		}
+		
+		// gradient_top
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_top"
+			visible			1
+			decoration
+		}
+		// gradient_bottom
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			0 405 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_bottom"
+			visible			1
+			decoration
+		}
+
+		// ------------------ TREE TITLE ------------------
+		
+		CHOICE_MENU_TITLE( "@MPUI_CHOOSE_CLASS_CAP" )
+
+		// ------------------ buttons ---------------------
+		#define BACK_OPEN	;
+		#include "ui_mp/navcontrols.inc"
+		
+		//=========================================================================
+		//================ MENU SELECTION FOR ONLINE GAME =================
+		//=========================================================================
+		#include "ui_mp/teamicon.inc"
+
+		// PC widescreen fix
+		#ifdef PC
+			#undef  CHOICE_X_START
+			#define CHOICE_X_START	-320
+			
+			#undef	CHOICE_HORIZONTAL_ALIGN
+			#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+		#endif
+		
+		// had to invent a macro with a focusArg widget to setfocus on the first custom button, otherwise it kept focusing on button 3 for some strange reason
+		#define CHOICE_BUTTON_FOCUS_MINE( itemIndex, textArg, actionArg, onFocusArg, extraArg ) \
+				CHOICE_BUTTON_BG( itemIndex, 1 ) \
+				CHOICE_HIGHLIGHT( itemIndex, 1 ) \
+				CHOICE_BUTTON_FOCUS_VIS_NOHI_EX( itemIndex, textArg, actionArg, onFocusArg, ;, 1, extraArg )
+
+		/* ==================================== custom classes ============================================= */
+				
+		CHOICE_BUTTON_FOCUS_MINE( 1, dvarString( customclass1 ), scriptMenuResponse "custom1,0"; close self, setdvar ui_custom_class_highlighted "0"; exec "set ui_multi_s 0", name "choice_one" )
+		CHOICE_BUTTON_FOCUS( 2, dvarString( customclass2 ), scriptMenuResponse "custom2,0"; close self, setdvar ui_custom_class_highlighted "10"; exec "set ui_multi_s 0", ; )
+		CHOICE_BUTTON_FOCUS( 3, dvarString( customclass3 ), scriptMenuResponse "custom3,0"; close self, setdvar ui_custom_class_highlighted "20"; exec "set ui_multi_s 0", ; )
+		CHOICE_BUTTON_FOCUS( 4, dvarString( customclass4 ), scriptMenuResponse "custom4,0"; close self, setdvar ui_custom_class_highlighted "30"; exec "set ui_multi_s 0", ; )
+		CHOICE_BUTTON_FOCUS( 5, dvarString( customclass5 ), scriptMenuResponse "custom5,0"; close self, setdvar ui_custom_class_highlighted "40"; exec "set ui_multi_s 0", ; )
+		CHOICE_BUTTON_FOCUS( 6, dvarString( customclass6 ), scriptMenuResponse "custom6,0"; close self, setdvar ui_custom_class_highlighted "50"; exec "set ui_multi_s 0", ; )
+		CHOICE_BUTTON_FOCUS( 7, dvarString( customclass7 ), scriptMenuResponse "custom7,0"; close self, setdvar ui_custom_class_highlighted "60"; exec "set ui_multi_s 0", ; )
+		CHOICE_BUTTON_FOCUS( 8, dvarString( customclass8 ), scriptMenuResponse "custom8,0"; close self, setdvar ui_custom_class_highlighted "70"; exec "set ui_multi_s 0", ; )
+	
+		#define STATS_PRIMARY					stat( dvarInt( ui_custom_class_highlighted ) + 321 )
+		#define STATS_PRIMARY_ATTACHMENT		stat( dvarInt( ui_custom_class_highlighted ) + 322 )
+		#define STATS_SECONDARY					stat( dvarInt( ui_custom_class_highlighted ) + 323 )
+		#define STATS_SECONDARY_ATTACHMENT		stat( dvarInt( ui_custom_class_highlighted ) + 324 )
+		#define STATS_SPECIALTY_EQUIPMENT		stat( dvarInt( ui_custom_class_highlighted ) + 325 )
+		#define STATS_SPECIALTY_WEAPON			stat( dvarInt( ui_custom_class_highlighted ) + 326 )
+		#define STATS_SPECIALTY_ABILITY			stat( dvarInt( ui_custom_class_highlighted ) + 327 )
+		#define STATS_SPECIAL_GRENADE			stat( dvarInt( ui_custom_class_highlighted ) + 328 )
+		#define STATS_CAMO						stat( dvarInt( ui_custom_class_highlighted ) + 329 )
+
+		#include "ui/safearea.menu"
+		
+		/* ================================================================================= */
+		/* ================================ LOADOUT DISPLAY ================================ */
+		/* ================================================================================= */
+		
+		#define STAT_CAC_PRIMARY				int( STATS_PRIMARY + dvarInt(ui_multi_s) )
+		#define STAT_CAC_PRIMARY_ATTACHMENT		int( STATS_PRIMARY_ATTACHMENT + dvarInt(ui_multi_s) )
+		#define STAT_CAC_SECONDARY				int( STATS_SECONDARY+dvarInt(ui_multi_s) )
+		#define STAT_CAC_SECONDARY_ATTACHMENT	int( STATS_SECONDARY_ATTACHMENT + dvarInt(ui_multi_s) )
+		#define STAT_CAC_SPECIALTY_EQUIPMENT	int( STATS_SPECIALTY_EQUIPMENT + dvarInt(ui_multi_s) )
+		#define STAT_CAC_SPECIALTY_WEAPON		int( STATS_SPECIALTY_WEAPON + dvarInt(ui_multi_s) )
+		#define STAT_CAC_SPECIALTY_ABILITY		int( STATS_SPECIALTY_ABILITY + dvarInt(ui_multi_s) )
+		#define STAT_CAC_SPECIAL_GRENADE		int( STATS_SPECIAL_GRENADE + dvarInt(ui_multi_s) )
+		#define STAT_CAC_CAMO					int( STATS_CAMO + dvarInt(ui_multi_s) )
+		
+		#define LOADOUT_WIDTH 			270
+		#define ORIGIN_LOADOUT			((-(LOADOUT_WIDTH - RIGHTITEM_OFFSET))-80) 38
+		
+		#include "ui_mp/class_loadout.inc"
+		
+	}
+}

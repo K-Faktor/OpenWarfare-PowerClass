@@ -1,0 +1,171 @@
+/**/
+//******************************************************************************
+//  _____                  _    _             __
+// |  _  |                | |  | |           / _|
+// | | | |_ __   ___ _ __ | |  | | __ _ _ __| |_ __ _ _ __ ___
+// | | | | '_ \ / _ \ '_ \| |/\| |/ _` | '__|  _/ _` | '__/ _ \
+// \ \_/ / |_) |  __/ | | \  /\  / (_| | |  | || (_| | | |  __/
+//  \___/| .__/ \___|_| |_|\/  \/ \__,_|_|  |_| \__,_|_|  \___|
+//       | |               We don't make the game you play.
+//       |_|                 We make the game you play BETTER.
+//
+//            Website: http://openwarfaremod.com/
+//******************************************************************************
+
+#include "ui/menudef.h"
+#include "ui_mp/common_macro.inc"
+
+#define CHOICE_SIZE_X			150
+#define CHOICE_SIZE_Y			22
+
+#define CHOICE_X_START			0
+#define CHOICE_Y_START			204//180
+
+#define CHOICE_SEP_OFFSET_Y		-2
+
+#define CHOICE_SEP_1			1
+#define CHOICE_SEP_2			3 
+
+#include "ui_mp/menustyle.inc"
+#include "ui_mp/choices_setup_teams.menu"
+
+{
+	menuDef
+	{
+		name			"team_marinesopfor"
+		rect			0 0 640 480
+		focuscolor		COLOR_FOCUSED
+		style			WINDOW_STYLE_EMPTY
+		blurWorld		7.0
+		legacySplitScreenScale
+		onEsc
+		{
+			scriptMenuResponse "back";
+			//close "team_marinesopfor";
+		}
+		onOpen
+		{
+			//focusFirst;
+			setfocus "auto_assign";
+		}
+
+		#ifndef PC
+		execkeyint BUTTON_START
+		{
+			close self;
+		}
+		#endif
+		
+		// background
+		itemDef
+		{
+			style			WINDOW_STYLE_SHADER
+			rect			FULLSCREEN_WIDE
+			background		"animbg_blur_back"
+			forecolor		0.724 0.724 0.724 1
+			visible			1
+			decoration
+		}
+		
+		// gradient_top
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			0 0 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_top"
+			visible			1
+			decoration
+		}
+		// gradient_bottom
+		itemDef	{
+			style			WINDOW_STYLE_SHADER
+			rect			0 405 854 75 HORIZONTAL_ALIGN_FULLSCREEN 0
+			background		"gradient_bottom"
+			visible			1
+			decoration
+		}
+
+		itemDef
+		{
+			rect			255 180 128 128
+			forecolor		1 1 1 1
+			style			WINDOW_STYLE_SHADER
+			background		"new_logo_ow"
+			visible 		1
+			decoration
+		}
+
+		// ------------------ TREE TITLE ------------------
+
+		CHOICE_MENU_TITLE( "@MPUI_CHOOSE_TEAM" )
+
+		// map display ================================================
+		#include "ui_mp/tactical_map.inc";
+
+		// ------------------ buttons ---------------------
+		#define BACK_OPEN	;
+		#include "ui_mp/navcontrols.inc"
+
+		//=========================================================
+		//===================== MENU SELECTION ====================
+		//=========================================================
+		#include "ui_mp/teamicon.inc"
+
+		// PC widescreen fix
+		#ifdef PC
+			#undef  CHOICE_X_START
+			#define CHOICE_X_START	-320
+
+			#undef	CHOICE_HORIZONTAL_ALIGN
+			#define CHOICE_HORIZONTAL_ALIGN HORIZONTAL_ALIGN_CENTER
+		#endif
+		
+		#define SETUP_ACTION_CREATEACLASS \
+			play "mouse_click"; \
+			scriptMenuResponse "edit_class" \
+			open pc_cac2_popup;
+		
+		CHOICE_BUTTON_FOCUS_VIS_ADV( 1, "@OW_CAC_TITLE", SETUP_ACTION_CREATEACLASS; ;, exec "set ui_hint_text @MPUI_DESC_CREATE_A_CLASS", CLEARUIHINT, when( team( name ) == "TEAM_SPECTATOR" && !dvarbool( ui_close_class ) && !localvarBool( ui_hideBack ) ), team( name ) == "TEAM_SPECTATOR" && !localvarBool( ui_hideBack ) )
+		
+		CHOICE_SEPARATOR_VIS( CHOICE_SEP_1, when( team( name ) == "TEAM_SPECTATOR" && !dvarbool( ui_close_class ) && !localvarBool( ui_hideBack ) ); )
+
+		CHOICE_BUTTON_VIS( 2, "@" + dvarString( g_TeamName_Axis ), play "mouse_click"; scriptMenuResponse "axis";, when( ( team( name ) == "TEAM_SPECTATOR" || team(name) == "TEAM_FREE" ) && dvarint(ui_force_autoassign) == 0 && dvarint(ui_force_allies) == 0 ); )
+		CHOICE_DBUTTON_VIS( 2, "@" + dvarString( g_TeamName_Axis ), when( ( team( name ) == "TEAM_SPECTATOR" || team(name) == "TEAM_FREE" ) && ( dvarint(ui_force_autoassign) == 1 || dvarint(ui_force_allies) == 1 ) ); )
+
+		CHOICE_BUTTON_BG( 3, 1 )
+		CHOICE_HIGHLIGHT( 3, 1 )
+
+		CHOICE_BUTTON_VIS_NOHI( 3, "@" + dvarString( g_TeamName_Allies ), play "mouse_click"; scriptMenuResponse "allies";, when( ( team( name ) == "TEAM_AXIS" || team( name ) == "TEAM_SPECTATOR" || team(name) == "TEAM_FREE" ) && dvarint(ui_force_autoassign) == 0 && dvarint(ui_force_axis) == 0 ); )
+		CHOICE_DBUTTON_VIS_NOHI( 3, "@" + dvarString( g_TeamName_Allies ), when( ( team( name ) == "TEAM_AXIS" || team( name ) == "TEAM_SPECTATOR" || team(name) == "TEAM_FREE" ) && ( dvarint(ui_force_autoassign) == 1 || dvarint(ui_force_axis) == 1 ) ); )
+
+		CHOICE_BUTTON_VIS_NOHI( 3, "@" + dvarString( g_TeamName_Axis ), play "mouse_click"; scriptMenuResponse "axis";, when( team( name ) == "TEAM_ALLIES" && dvarint(ui_force_autoassign) == 0 && dvarint(ui_force_allies) == 0 ); )
+		CHOICE_DBUTTON_VIS_NOHI( 3, "@" + dvarString( g_TeamName_Axis ), when( team( name ) == "TEAM_ALLIES" && ( dvarint(ui_force_autoassign) == 1 || dvarint(ui_force_allies) == 1 ) ); )
+
+		CHOICE_BUTTON_EX_ADV( 4, "@MPUI_AUTOASSIGN", play "mouse_click"; scriptMenuResponse "autoassign";, name "auto_assign", when( ( gametype() != "bel" || team( name ) == "TEAM_SPECTATOR" ) && dvarint(ui_force_allies) == 0 && dvarint(ui_force_axis) == 0 ); )
+		CHOICE_DBUTTON_VIS_NOHI( 4, "@MPUI_AUTOASSIGN", when( ( ( team( name ) == "TEAM_ALLIES" || team( name ) == "TEAM_AXIS" ) && gametype() == "bel" ) || dvarint(ui_force_allies) == 1 || dvarint(ui_force_axis) == 1 ); )
+		
+		CHOICE_SEPARATOR( CHOICE_SEP_2 )
+
+		CHOICE_BUTTON_BG( 5, 1 )
+		CHOICE_HIGHLIGHT( 5, 1 )
+		CHOICE_BUTTON_VIS_NOHI( 5, "@MPUI_SPECTATOR", play "mouse_click"; scriptMenuResponse "spectator";, when( dvarInt( ui_broadcaster ) != 1 && team( name ) != "TEAM_SPECTATOR" && dvarbool( scr_game_spectatetype ) ); )
+		CHOICE_BUTTON_VIS_NOHI( 5, "@OW_BROADCASTER", play "mouse_click"; scriptMenuResponse "spectator";, when( dvarInt( ui_broadcaster ) == 1 && team( name ) != "TEAM_SPECTATOR" && dvarbool( scr_game_spectatetype ) ); )
+		CHOICE_BUTTON_VIS_NOHI( 5, "@MENU_CONTROLS", close self; open main_controls;, when( team( name ) == "TEAM_SPECTATOR" ) )
+
+		CHOICE_BUTTON_VIS( 6, "@MENU_OPTIONS", close self; open main_options; execnow "set ui_allow_graphic_change 0";, when( team( name ) == "TEAM_SPECTATOR" ) )
+		CHOICE_BUTTON_VIS( 7, "@MPUI_LEAVE_GAME", open popup_endgame, when( team( name ) == "TEAM_SPECTATOR" ) )
+
+	}
+
+	#include "ui_mp/popupstyle.inc"	
+	#include "ui/choices_setup_popmenu.menu"
+	
+	// ====================== create a class (custom class selection) =========================
+	#undef CHOICE_SIZE_X
+	#define CHOICE_SIZE_X		212
+
+	#define CAC_POPUP_X		(-320)
+	#define CAC_POPUP_Y		(188)
+	
+	#include "ui_mp/popup_cac_edit.inc"
+	CAC_POPUP( "pc_cac2_popup", CAC_POPUP_X, CAC_POPUP_Y )
+}

@@ -1,0 +1,22 @@
+count,weapName,attach stats,attach maxVal,attachments,camo stats,camo maxVal,camos
+0,mp5,2521,25 75 150,reflex silencer acog,2522,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+1,skorpion,2523,25 75 150,reflex silencer acog,2524,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+2,m16,2501,25 75 150,reflex silencer acog,2502,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+3,ak47,2503,25 75 150,reflex silencer acog,2504,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+4,uzi,2525,25 75 150,reflex silencer acog,2526,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+5,ak74u,2527,25 75 150,reflex silencer acog,2528,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+6,p90,2529,25 75 150,reflex silencer acog,2530,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+7,g3,2505,25 75 150,reflex grip acog,2506,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+8,g36c,2511,25 75 150,reflex grip acog,2512,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+9,m4,2507,25 75 150,reflex grip acog,2508,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+10,mp44,,,,2513,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+11,winchester1200,2561,25 50,reflex grip,2562,25 50 100,camo_blackwhitemarpat camo_stagger camo_tigerred
+12,m1014,2563,25 50,reflex grip,2564,55 50 100,camo_blackwhitemarpat camo_stagger camo_tigerred
+13,rpd,2543,25 75 150,reflex grip acog,2544,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+14,saw,2541,25 75 150,reflex grip acog,2542,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+15,m60e4,2545,25 75 150,reflex grip acog,2546,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+16,m40a3,2583,100,acog,2584,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+17,dragunov,2585,100,acog,2586,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+18,barrett,2589,100,acog,2590,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+19,remington700,2587,100,acog,2588,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
+20,m21,2581,100,acog,2582,25 75 150,camo_blackwhitemarpat camo_stagger camo_tigerred
